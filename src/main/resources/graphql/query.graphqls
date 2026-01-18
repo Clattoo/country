@@ -1,0 +1,23 @@
+type Country {
+  id: ID!
+  name: String!
+  code: String!
+}
+
+type Query {
+  countries: [Country!]!
+  countryByCode(code: String!): Country
+}
+
+type Mutation {
+  # Создать новую страну (POST /api/countries)
+  createCountry(input: CreatedCountry!): Country!
+
+  # Обновить название страны по коду (PATCH /api/countries/{code})
+  updateCountryName(code: String!, name: String!): Country!
+}
+
+input CreatedCountry {
+    name: String!
+    code: String!
+}

@@ -7,5 +7,6 @@ import java.util.List;
 public interface CountryService {
     List<CountryDto> getAllCountries();
     CountryDto addCountry(CountryDto country);
-    void editCountry(String code, CountryDto country);
+    CountryDto editCountry(String code, CountryDto country);
+    CountryDto findByCode(String code);
 }

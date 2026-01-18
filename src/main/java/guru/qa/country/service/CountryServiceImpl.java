@@ -37,12 +37,20 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
-    public void editCountry(String code, CountryDto dto) {
+    public CountryDto editCountry(String code, CountryDto dto) {
         CountryEntity entity = repository.findByCode(code)
                 .orElseThrow(() -> new IllegalArgumentException("Country not found: " + code));
 
         entity.setName(dto.getName());
-        repository.save(entity);
+
+        return toDto(repository.save(entity));
+    }
+
+    @Override
+    public CountryDto findByCode(String code) {
+        return repository.findByCode(code)
+                .map(this::toDto)
+                .orElse(null);
     }
 
     private CountryDto toDto(CountryEntity e) {
