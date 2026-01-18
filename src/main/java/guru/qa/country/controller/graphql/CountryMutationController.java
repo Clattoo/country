@@ -1,6 +1,7 @@
 package guru.qa.country.controller.graphql;
 
 import guru.qa.country.controller.CountryDto;
+import guru.qa.country.controller.CountryInput;
 import guru.qa.country.service.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -16,13 +17,16 @@ public class CountryMutationController {
 
     private final CountryService countryService;
 
-    // Mutation: createCountry
     @MutationMapping
-    public CountryDto createCountry(@Argument("input") CountryDto dto) {
+    public CountryDto createCountry(@Argument("input") CountryInput input) {
+        CountryDto dto = CountryDto.builder()
+                .name(input.getName())
+                .code(input.getCode())
+                .build();
+
         return countryService.addCountry(dto);
     }
 
-    // Mutation: updateCountryName
     @MutationMapping
     public CountryDto updateCountryName(@Argument String code,
                                         @Argument String name) {
@@ -30,13 +34,6 @@ public class CountryMutationController {
                 .name(name)
                 .build();
 
-        countryService.editCountry(code, dto);
-
-        // вернуть обновлённую страну
-        return countryService.getAllCountries()
-                .stream()
-                .filter(c -> c.getCode().equals(code))
-                .findFirst()
-                .orElseThrow();
+        return countryService.editCountry(code, dto);
     }
 }

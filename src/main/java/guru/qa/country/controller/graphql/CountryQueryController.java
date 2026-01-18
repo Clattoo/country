@@ -18,19 +18,13 @@ public class CountryQueryController {
 
     private final CountryService countryService;
 
-    // Query: countries
     @QueryMapping
     public List<CountryDto> countries() {
         return countryService.getAllCountries();
     }
 
-    // Query: countryByCode
     @QueryMapping
     public CountryDto countryByCode(@Argument String code) {
-        return countryService.getAllCountries()
-                .stream()
-                .filter(c -> c.getCode().equals(code))
-                .findFirst()
-                .orElse(null); // возвращаем null если не найдено
+        return countryService.findByCode(code);
     }
 }
