@@ -1,6 +1,8 @@
 package guru.qa.country.service;
 
 import guru.qa.country.controller.CountryDto;
+import guru.qa.country.ex.CountryAlreadyExistsException;
+import guru.qa.country.ex.NotFoundException;
 import guru.qa.country.repository.CountryEntity;
 import guru.qa.country.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,9 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public CountryDto addCountry(CountryDto dto) {
         if (repository.existsByCode(dto.getCode())) {
-            throw new IllegalArgumentException("Country with code " + dto.getCode() + " already exists");
+            throw new CountryAlreadyExistsException(
+                    "Country with code " + dto.getCode() + " already exists"
+            );
         }
 
         CountryEntity entity = CountryEntity.builder()
@@ -39,7 +43,7 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public CountryDto editCountry(String code, CountryDto dto) {
         CountryEntity entity = repository.findByCode(code)
-                .orElseThrow(() -> new IllegalArgumentException("Country not found: " + code));
+                .orElseThrow(() -> new NotFoundException("Country not found: " + code));
 
         entity.setName(dto.getName());
 
@@ -50,7 +54,7 @@ public class CountryServiceImpl implements CountryService {
     public CountryDto findByCode(String code) {
         return repository.findByCode(code)
                 .map(this::toDto)
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("Country not found: " + code));
     }
 
     private CountryDto toDto(CountryEntity e) {
