@@ -42,3 +42,4 @@ server:
 
 country:
   base-uri: 'https://127.0.0.1:8080'
+  client: soap
