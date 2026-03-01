@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.5.9'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'com.google.protobuf' version '0.9.4'
+	id 'com.github.edeandrea.xjc-generation' version '1.6'
 }
 
 group = 'guru.qa'
@@ -28,6 +29,9 @@ dependencyManagement {
 }
 
 dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-web-services') {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+	}
 	implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
 	implementation 'io.grpc:grpc-services:1.75.0'
 
@@ -45,12 +49,38 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.42'
 	compileOnly 'org.projectlombok:lombok:1.18.42'
 	runtimeOnly 'org.postgresql:postgresql:42.7.8'
+
+	implementation "wsdl4j:wsdl4j:1.6.3"
+
+	xjc "org.glassfish.jaxb:jaxb-xjc:4.0.2"
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+xjcGeneration {
+	defaultAdditionalXjcOptions = ['encoding': 'UTF-8']
+	schemas {
+		wsdlSchema {
+			schemaRootDir = "$projectDir/src/main/resources"
+			schemaFile = 'country.xsd'
+			javaPackageName = 'quru.qa.xml.country'
+			sourceSet = 'main'
+		}
+	}
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir('src/main/java')
+			srcDir("$buildDir/generated-sources/main/xjc")
+		}
+	}
 }
 
 protobuf {
